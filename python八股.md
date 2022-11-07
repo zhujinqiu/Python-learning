@@ -253,13 +253,16 @@ Python 有多种方式实现浅拷贝，copy模块的copy 函数 ，对象的 co
 
 
 
-## 7、函数中× 与 ××的参数区
+## 7、这两个参数是什么意思。*args、**kwargs。
 
 **这也是python中非常有特色的：当\*和\**符号出现在函数定义的参数中时，表示任意数目参数收集。**
 
 **在默认情况下，参数是通过其位置进行匹配的**，从左到右，而且必须精确的传递和函数头部参数名一样多的参数。
 
-
+首先args，kwargs并不是必须这样设定的，只是一个约定俗成的名字，args（位置参数），kwargs（关键字参数）。
+都用于函数的定义，用于将不定数量的参数传递给函数。
+*args：用来发送非键值对可变数量参数，list，trump
+**kwargs：用来发送键值对可变数量参数，dict
 
 **这也是python中非常有特色的：当\*和\**符号出现在函数定义的参数中时，表示任意数目参数收集。**
 
@@ -278,21 +281,70 @@ myprint2(x=1,y=2,z=3)
 ==> {'z'=3,'x'=1,'y'=2}
 ```
 
+## 8、python中__new__和__init__的区别
+
+__new__方法和__init__方法都是python中的构造方法，其中__new__方法使用较少，__init__方法使用较多。
+首先来了解下这两种方法：
+
+1.__new__是在**实例创建之前**被调用的，用于创建实例，然后返回该实例对象，是个静态方法。
+2.__init__是当**实例对象创建完成后被调用的**，用于初始化一个类实例，是个实例方法。
+
+由上可知，__new__先被调用，__new__的返回值将传递给__init__方法的第一个参数，然后__init__被调用，给这个实例设置一些参数。
+```
+class A():
+    def __new__(cls, *args, **kwargs):
+        print('this is A __new__')
+        # return super(A, cls).__new__(cls)  # 或者下面这种形式，两种都可
+        return object.__new__(cls)
+
+    def __init__(self, title):
+        print('this is A __init__')
+        self.title = title
+
+
+a = A('python book')
+
+输出:
+this is A __new__
+this is A __init__
+
+```
 
 
 
+**两种方法的区别：**
+
+1.__new__至少要有一个参数cls，**且必须要有返回值**，返回的是实例化出来的实例，有两种return方式：
+
+```
+return super(父类,cls).__new__(cls)
+或者
+return object.__new__(cls)
+
+```
+
+2.__init__**有一个参数self**，就是这个__new__返回的实例，__init__在__new__基础上完成一些其他初始化的动作，__init__不需要有返回值；
 
 
 
+如果__new__没有返回cls(即当前类)的实例，那么当前类的__init__方法是不会被调用的；
+
+```class A():
+    def __new__(cls, *args, **kwargs):
+        print('this is A __new__')
+        # return super(A, cls).__new__(cls)  
+
+    def __init__(self, title):
+        print('this is A __init__')
+        self.title = title
 
 
+a = A('python book')
 
+输出：
+this is A __new__
 
-
-
-
-
-
+```
 
 
 
